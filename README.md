@@ -8,7 +8,7 @@ This page will provide information on getting WinGHCi compiled using Visual Stud
 
 Here's WinGHCi compiled as detailed below running on a Windows 10 virtual machine:
 
-![WinGHCi.exe running on a Windows 10 virtual machine](media/WinGHCiScreenShot.png)
+![WinGHCi.exe running on a Windows 10 virtual machine](Media/WinGHCiScreenShot.png)
 
 We use MECM to deploy the required components, however the scripts can be used to manually deploy the software, and there are notes where required to help guide.
 
