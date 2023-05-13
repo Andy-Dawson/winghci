@@ -1,0 +1,10 @@
+# Exclude specific folders and files
+/Backup
+/Release
+/StartGHCI/Release
+/StartProcess/Release
+/winghci/Release
+/.vs
+/README_Original.md
+/UpgradeLog.htm
+

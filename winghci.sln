@@ -1,11 +1,13 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "winghci", "winghci\winghci.vcproj", "{522A9495-1AF0-423E-8867-DB3DFD09889F}"
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33627.172
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "winghci", "winghci\winghci.vcxproj", "{522A9495-1AF0-423E-8867-DB3DFD09889F}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "StartGHCI", "StartGHCI\StartGHCI.vcproj", "{E5CA7417-B25C-4275-8D4D-72680A609BB8}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "StartGHCi", "StartGHCI\StartGHCI.vcxproj", "{E5CA7417-B25C-4275-8D4D-72680A609BB8}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "StartProcess", "StartProcess\StartProcess.vcproj", "{C77DFFCF-CEAC-4F4D-843C-412A8BA36BF3}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "StartProcess", "StartProcess\StartProcess.vcxproj", "{C77DFFCF-CEAC-4F4D-843C-412A8BA36BF3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -28,5 +30,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6552DC96-F7C1-4F55-B124-F569913F7FDB}
 	EndGlobalSection
 EndGlobal
