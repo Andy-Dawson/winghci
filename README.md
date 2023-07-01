@@ -1,6 +1,6 @@
 # WinGHCi and GHC setup
 
-One of the modules in the Computer Science course in the school in which I work needs GHC (the Glasgo Haskell Compiler). In the past, Haskell Platform has been used to support this requirement, however that was deprecated in 2022.
+One of the modules in the Computer Science course in the school in which I work needs GHC (the Glasgow Haskell Compiler). In the past, Haskell Platform has been used to support this requirement, however that was deprecated in 2022.
 
 The majority of the module uses [WinGHCi](https://github.com/haskell/winghci) (a simple Windows GUI for GHCi), however at the time of writing, this has not been modified in 14 years, and no recent builds are provided.
 
@@ -71,6 +71,6 @@ C:\Support\Haskell
     5. Perform required tests to ensure that everything is working as expected.
     6. Roll the solution out to all required computers.
 
-Remember: If running the installation scripts manually need to run Set-ExecutionPolicy Unrestricted beforehand.
+Remember: If running the installation scripts manually you need to run 'Set-ExecutionPolicy Unrestricted' beforehand.
 
 The script 'FileAssociation.ps1' is also included in case you need to move the WinGHCi location following installation. If this happens, run FileAssociation.ps1 from the new folder containing WinGHCi.exe to re-register the file associations.
