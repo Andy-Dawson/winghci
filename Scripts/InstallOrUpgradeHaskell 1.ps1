@@ -1,13 +1,14 @@
 ﻿################################################
 #
-# This script installs or upgrades Haskell
-# This is used for the senior CS images
+# This script installs or upgrades Haskell using Chocolatey
 #
 # Author: Andy Dawson
 # Script Version: 1.0.0: Initial version
 #                 1.0.1: Using Start-Process to wait for choco command completion
 #                 1.0.2: Added file extension registration PowerShell script call
 #                 1.0.3: Merged file extension registration script with main script
+#                 1.0.4: Removed '-localonly' switch from choco commands [As of Choco 2.0.0
+#                        this paramter, along with others, has been removed]
 #
 ################################################
 
@@ -154,10 +155,16 @@ try {
     }
 } catch { }
 
+# Get the version of Choco that we have on the system - We'll want this later
+$ChocoVer = & choco -v
+if ([System.Version]$ChocoVer -ge [System.Version]"2.0.0") {
+    Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
+}
+
 # Install or upgrade GHC
 # Check to see whether GHC is already installed
 try {
-    $ghcvers = ([regex]::Matches((choco list -localonly), "(ghc\s){1}(\d+|\.)+")).Value # Returns ghc x.y.z
+    $ghcvers = ([regex]::Matches((choco list), "(ghc\s){1}(\d+|\.)+")).Value # Returns ghc x.y.z
     if ($ghcvers.Count -eq 1) {
         # It appears we have GHC installed, check whether we can upgrade it
         NotifyUser -Message "GHC installed - checking for upgrade"
@@ -170,6 +177,24 @@ try {
         } else {
             NotifyUser -Message "Upgrading GHC"
             Start-Process -FilePath "choco" -ArgumentList "upgrade ghc --yes" -Wait -NoNewWindow
+            # Now remove any old versions that are hanging around. Choco doesn't list them as installed once the new version is in place
+            # so we can remove the old folder and any child items remaining within it.
+            $GHCInstalledVers = Get-ChildItem -Path "C:\Tools" -Directory -Filter "ghc-*" -Depth 0 | Sort-Object -Property FullName -Descending
+            $NumGHCInstalledVers = $GHCInstalledVers.Count
+            if ($NumGHCInstalledVers -gt 1) {
+                # We have multiple versions of GHC installed and need to deal with this
+                NotifyUser -Message "Multiple versions of GHC found on disk, tidying up..."
+                for ($i = 1; $i -le ($NumGHCInstalledVers - 1); $i++) {
+                    NotifyUser -Message "Removing GHC installation at $($GHCInstalledVers[$i].FullName)"
+                    Remove-Item -Path $GHCInstalledVers[$i].FullName -Recurse -Force
+                }
+            } elseif ($NumGHCInstalledVers -eq 1) {
+                # We have exactly one version installed
+                NotifyUser -Message "A single version of GHC has been located on disk"
+            } else {
+                # We appear to have zero GHC installations, which will cause an issue
+                NotifyUser -Message "No installations of GHC have been located during the GHC post-upgrade operations - This will cause an issue"
+            }
         }
     } else {
         # GHC is not installed, install it
@@ -180,12 +205,18 @@ try {
 
 # Refresh the Chocolatey environment so we don't have to close and re-open the PowerShell/cmd window
 NotifyUser -Message "Refreshing the Chocolatey environment"
-Start-Process -FilePath "refreshenv" -Wait -NoNewWindow
+if ([System.Version]$ChocoVer -ge [System.Version]"2.0.0") {
+    # This seems to work, whereas the command within the 'else' no longer does with Choco >= 2.0.0
+    & refreshenv
+} else {
+    # This seems to work with Choco < 2.0.0
+    Start-Process -FilePath "refreshenv" -Wait -NoNewWindow
+}
 
 # During the GHC install, there's a step to rename a folder inside C:\Tools that seems to fail (anti-virus scanning the dropped files perhaps?)
 # Need to ensure that this folder has been renamed before going any further
 NotifyUser -Message "Checking to see whether the GHC folder needs renaming"
-$ghcver = (([regex]::Matches((choco list -localonly), "(ghc\s){1}(\d+|\.)+")).Value -split " ")[1]
+$ghcver = (([regex]::Matches((choco list), "(ghc\s){1}(\d+|\.)+")).Value -split " ")[1]
 if ($ghcver -ne $null) {
 	#Check whether the 'C:\Tools\ghc-<version>' folder exists
 	$folder = "C:\Tools\ghc-" + $ghcver
@@ -227,7 +258,7 @@ NotifyUser -Message "Starting Haskell-Stack installation"
 
 # Check to see whether Haskell-Stack is already installed
 try {
-    $hsvers = ([regex]::Matches((choco list -localonly), "(haskell-stack\s){1}(\d+|\.)+")).Value # Returns ghc x.y.z
+    $hsvers = ([regex]::Matches((choco list), "(haskell-stack\s){1}(\d+|\.)+")).Value # Returns ghc x.y.z
     if ($hsvers.Count -eq 1) {
         # It appears we have Haskell-Stack installed, check whether we can upgrade it
 		NotifyUser -Message "Haskell-Stack appears to be installed, checking for possible upgrade"
@@ -250,12 +281,18 @@ try {
 
 # Refresh the Chocolatey environment so we don't have to close and re-open the PowerShell/cmd window
 NotifyUser -Message "Refreshing the Chocolatey environment (again)"
-Start-Process -FilePath "refreshenv" -Wait -NoNewWindow
+if ([System.Version]$ChocoVer -ge [System.Version]"2.0.0") {
+    # This seems to work, whereas the command within the 'else' no longer does with Choco >= 2.0.0
+    & refreshenv
+} else {
+    # This seems to work with Choco < 2.0.0
+    Start-Process -FilePath "refreshenv" -Wait -NoNewWindow
+}
 
 # Now copy the WinGHCi items into the correct location
 NotifyUser -Message "Copying WinGHCi files to GHC bin folder"
 $GHCBinFolder = $folder + "\bin"
-Copy-Item -Path ".\WinGHCi\*" -Destination $GHCBinFolder
+Copy-Item -Path ".\WinGHCi\*" -Destination $GHCBinFolder -Force
 
 # Finally, create a link (or two) in the global start menu for WinGHCi (+anything else we need to point people at)
 NotifyUser -Message "Creating Start Menu links"
