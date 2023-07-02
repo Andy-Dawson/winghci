@@ -135,10 +135,13 @@ NotifyUser -Message "Starting Haskell install"
 # Check for Chocolatey, and that it is up-to-date and correct this, if this is not the case:
 try {
     if($env:Path -match "chocolatey") {
-        $vers = ([regex]::Matches((choco upgrade chocolatey --yes --force --whatif), "(?<=(v|\s))(\d+|\.)+(?=\s)")).Value # Yes, it's horrible, but gives the versions that are installed and available as two values (assuming Chocolatey is installed) and allows a comparison and upgrade, or installation
-        if (@($vers).Count -eq 2) { # We have an installed version and an available version
+        $vers = ([regex]::Matches((choco upgrade chocolatey --yes --force --whatif), "(?<=(v|\s))(0|[1-9]\d*)(\.(0|[1-9]\d*)){1,3}")).Value # Yes, it's horrible, but gives the versions that are installed and available as two (or more) values (assuming Chocolatey is installed) and allows a comparison and upgrade, or installation
+        if (@($vers).Count -ge 2) { # We have an installed version and an available version
+            # Note that depending on exactly what gets returned, we may have pending reboot warnings etc. that complicate things
+            # We may get two values to compare, or more than two, however we typically want the first and last values to compare
             # Check the versions to ensure that they are the same
-            if ($vers[0] -eq $vers[1]) {
+            $FinalArrayIndex = ($vers.count - 1)
+            if ($vers[0] -eq $vers[$FinalArrayIndex]) {
                 NotifyUser -Message "Chocolatey is installed and up-to-date"
             } else {
                 # Chocolatey is installed, but out of date and needs upgrading
