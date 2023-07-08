@@ -135,7 +135,7 @@ NotifyUser -Message "Starting Haskell install"
 # Check for Chocolatey, and that it is up-to-date and correct this, if this is not the case:
 try {
     if($env:Path -match "chocolatey") {
-        $vers = ([regex]::Matches((choco upgrade chocolatey --yes --force --whatif), "(?<=(v|\s))(0|[1-9]\d*)(\.(0|[1-9]\d*)){1,3}")).Value # Yes, it's horrible, but gives the versions that are installed and available as two (or more) values (assuming Chocolatey is installed) and allows a comparison and upgrade, or installation
+        $vers = ([regex]::Matches((choco upgrade chocolatey --yes --force --whatif), "(?<=(v|\s))(0|[1-9]\d*)(\.(0|[1-9]\d*)){1,3}")).Value # gives the versions that are installed and available as two (or more) values (assuming Chocolatey is installed) and allows a comparison and upgrade, or installation
         if (@($vers).Count -ge 2) { # We have an installed version and an available version
             # Note that depending on exactly what gets returned, we may have pending reboot warnings etc. that complicate things
             # We may get two values to compare, or more than two, however we typically want the first and last values to compare
@@ -210,7 +210,8 @@ try {
 NotifyUser -Message "Refreshing the Chocolatey environment"
 if ([System.Version]$ChocoVer -ge [System.Version]"2.0.0") {
     # This seems to work, whereas the command within the 'else' no longer does with Choco >= 2.0.0
-    & refreshenv
+    # & refreshenv
+    Update-SessionEnvironment
 } else {
     # This seems to work with Choco < 2.0.0
     Start-Process -FilePath "refreshenv" -Wait -NoNewWindow
@@ -286,7 +287,8 @@ try {
 NotifyUser -Message "Refreshing the Chocolatey environment (again)"
 if ([System.Version]$ChocoVer -ge [System.Version]"2.0.0") {
     # This seems to work, whereas the command within the 'else' no longer does with Choco >= 2.0.0
-    & refreshenv
+    # & refreshenv
+    Update-SessionEnvironment
 } else {
     # This seems to work with Choco < 2.0.0
     Start-Process -FilePath "refreshenv" -Wait -NoNewWindow
